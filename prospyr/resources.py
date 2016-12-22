@@ -358,9 +358,13 @@ class Company(Resource, mixins.ReadWritable):
     phone_numbers = fields.Nested(schema.PhoneNumberSchema, many=True)
     socials = fields.Nested(schema.SocialSchema, many=True)
     tags = fields.List(fields.String)
+    custom_fields = fields.Nested(
+        schema.CustomFieldSchema,
+        many=True,
+        allow_none=True
+    )
     date_created = Unix()
     date_modified = Unix()
-    # TODO custom_fields = ...
     websites = fields.Nested(schema.WebsiteSchema, many=True)
 
 
@@ -404,9 +408,13 @@ class Person(Resource, mixins.ReadWritable):
     socials = fields.Nested(schema.SocialSchema, many=True)
     tags = fields.List(fields.String)
     title = fields.String(allow_none=True)
+    custom_fields = fields.Nested(
+        schema.CustomFieldSchema,
+        many=True,
+        allow_none=True
+    )
     date_created = Unix()
     date_modified = Unix()
-    # TODO custom_fields = ...
     websites = fields.Nested(schema.WebsiteSchema, many=True)
 
 
@@ -492,6 +500,11 @@ class Opportunity(Resource, mixins.ReadWritable):
     )
     tags = fields.List(fields.String)
     win_probability = fields.Integer()
+    custom_fields = fields.Nested(
+        schema.CustomFieldSchema,
+        many=True,
+        allow_none=True
+    )
     date_created = Unix()
     date_modified = Unix()
 
@@ -601,6 +614,11 @@ class Task(Resource, mixins.ReadWritable):
     status = fields.String(validate=OneOf(choices=('Open', 'Completed')))
     details = fields.String(allow_none=True)
     tags = fields.List(fields.String)
+    custom_fields = fields.Nested(
+        schema.CustomFieldSchema,
+        many=True,
+        allow_none=True
+    )
     date_created = Unix()
     date_modified = Unix()
 
@@ -644,9 +662,36 @@ class Lead(Resource, mixins.ReadWritable):
     tags = fields.List(fields.String)
     title = fields.String(allow_none=True)
     websites = fields.Nested(schema.WebsiteSchema, many=True)
-    # TODO custom_fields = ...
+    custom_fields = fields.Nested(
+        schema.CustomFieldSchema,
+        many=True,
+        allow_none=True,
+    )
     date_created = Unix()
     date_modified = Unix()
+
+
+class CustomField(Resource, mixins.Readable):
+    _data_types = (
+        'String', 'Text', 'Dropdown', 'Date', 'Checkbox', 'Float', 'URL',
+        'Percentage', 'Currency'
+    )
+
+    objects = ListOnlyManager()
+
+    class Meta:
+        list_path = 'custom_field_definitions/'
+        detail_path = 'custom_field_definitions/{id}'
+
+    id = fields.Integer()
+    name = fields.String()
+    data_type = fields.String(validate=OneOf(choices=_data_types))
+    currency = fields.String(allow_none=True)
+    options = fields.Nested(
+        schema.CustomFieldOptionSchema,
+        many=True,
+        allow_none=True
+    )
 
 
 class Placeholder(object):
