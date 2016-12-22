@@ -317,9 +317,12 @@ class User(Resource, mixins.Readable):
 
     class Meta(object):
         list_path = 'users/'
+        search_path = 'users/search/'
         detail_path = 'users/{id}/'
-
-    objects = ListOnlyManager()
+        order_fields = {
+            'name',
+            'email',
+        }
 
     id = fields.Integer()
     name = fields.String(required=True)
@@ -642,7 +645,7 @@ class Lead(Resource, mixins.ReadWritable):
             'last_interaction',
             'interaction_count',
             'date_created',
-            'date_modified'
+            'date_modified',
         }
 
     id = fields.Integer()
