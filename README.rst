@@ -173,6 +173,9 @@ can be fetched using the resource's ``objects.get()`` method, or you can call
     steve.name
     >>> 'Steve Cognito'
 
+    # as a special case, People can be read by email as well as ID:
+    steve = Person.objects.get(email='steve@example.org')
+
 Update
 ------
 
@@ -284,6 +287,21 @@ instances; these only support the ``all()`` method:
 
     PipelineStage.objects.all()
     >>> <ListSet: Qualifying, Quoted, ...>
+
+
+Account
+-------
+
+The ``Account`` resource represents the ProsperWorks account which you are
+currently working with. The name of the account can be read like so:
+
+.. code-block:: python
+
+    from prospyr import Account
+
+    account = Account.objects.get()
+    account.name
+    >>> 'So-and-so Company'
 
 
 Collection Error Handling
