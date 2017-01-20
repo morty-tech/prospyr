@@ -719,11 +719,6 @@ class Account(Resource, mixins.Singleton):
 
 
 class CustomField(Resource, mixins.Readable):
-    _data_types = (
-        'String', 'Text', 'Dropdown', 'Date', 'Checkbox', 'Float', 'URL',
-        'Percentage', 'Currency'
-    )
-
     objects = ListOnlyManager()
 
     class Meta:
@@ -732,7 +727,7 @@ class CustomField(Resource, mixins.Readable):
 
     id = fields.Integer()
     name = fields.String()
-    data_type = fields.String(validate=OneOf(choices=_data_types))
+    data_type = fields.String()
     currency = fields.String(allow_none=True)
     options = fields.Nested(
         schema.CustomFieldOptionSchema,
