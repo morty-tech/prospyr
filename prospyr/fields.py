@@ -21,13 +21,15 @@ class Unix(fields.Field):
     """
     def _serialize(self, value, attr, obj):
         try:
-            return arrow.get(value).timestamp
+            if value is not None:
+                return arrow.get(value).timestamp
         except ParserError as ex:
             raise ValidationError(ex)
 
     def _deserialize(self, value, attr, obj):
         try:
-            return arrow.get(value).datetime
+            if value is not None:
+                return arrow.get(value).datetime
         except ParserError as ex:
             raise ValidationError(ex)
 
