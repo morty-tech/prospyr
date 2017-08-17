@@ -234,13 +234,10 @@ class Resource(with_metaclass(ResourceMeta)):
         """
         data, errors = cls.Meta.schema.load(raw_data)
         if errors:
-            raise exceptions.ValidationError(
-                ('ProsperWorks delivered data which does not agree with the '
-                 'local Prospyr schema. This is probably a Prospyr bug. '
-                 'Errors encountered: %s' % repr(errors)),
-                raw_data=raw_data,
-                resource_cls=cls,
-                errors=errors,
+            logger.warning(
+                'ProsperWorks delivered data which does not agree with the '
+                'local Prospyr schema. This is probably a Prospyr bug. '
+                'Errors encountered: %s' % repr(errors)
             )
         return data
 
