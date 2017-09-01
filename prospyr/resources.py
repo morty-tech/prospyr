@@ -145,6 +145,7 @@ class PersonManager(Manager):
             )
             if resp.status_code not in {codes.ok}:
                 raise ApiError(resp.status_code, resp.text)
+            print(resp.json())
             return self.resource_cls.from_api_data(resp.json())
         raise ProspyrException("id or email is required when getting a Person")
 
@@ -668,6 +669,7 @@ class LeadManager(Manager):
             )
             if resp.status_code not in {codes.ok}:
                 raise ApiError(resp.status_code, resp.text)
+            print(resp.json())
             return self.resource_cls.from_api_data(resp.json())
         raise ProspyrException("id or email is required when getting a Lead")
 
