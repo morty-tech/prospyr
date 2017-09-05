@@ -7,3 +7,4 @@
 /dist/
 /prospyr.egg-info/
 __pycache__
+*.idea
