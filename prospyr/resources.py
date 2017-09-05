@@ -488,6 +488,27 @@ class CustomerSource(SecondaryResource, mixins.Readable):
     name = fields.String(required=True)
 
 
+class OpportunityManager(Manager):
+    def get(self, id=None, name=None):
+        if id is not None:
+            return super(OpportunityManager, self).get(id)
+        elif name is not None:
+            conn = connection.get(self.using)
+            path = self.resource_cls.Meta.search_path
+            resp = conn.post(
+                conn.build_absolute_url(path),
+                json={'name': name}
+            )
+            if resp.status_code not in {codes.ok}:
+                raise ApiError(resp.status_code, resp.text)
+            if type(resp.json()) == list:
+                if not resp.json():
+                    raise ApiError(resp.status_code, 'Response was: %s. Resource not found.' % resp.text)
+                elif len(resp.json()) == 1:
+                    return self.resource_cls.from_api_data(resp.json()[0])
+            return self.resource_cls.from_api_data(resp.json())
+        raise ProspyrException("id or name is required when getting a Opportunity")
+
 class Opportunity(Resource, mixins.ReadWritable):
     class Meta(object):
         create_path = 'opportunities/'
@@ -540,6 +561,8 @@ class Opportunity(Resource, mixins.ReadWritable):
     )
     date_created = Unix()
     date_modified = Unix()
+
+    objects = OpportunityManager()
 
 
 class ActivityType(SecondaryResource, mixins.Readable):
