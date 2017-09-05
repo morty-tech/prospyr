@@ -655,6 +655,26 @@ class Task(Resource, mixins.ReadWritable):
     date_created = Unix()
     date_modified = Unix()
 
+class LeadManager(Manager):
+    def get(self, id=None, email=None):
+        if id is not None:
+            return super(LeadManager, self).get(id)
+        elif email is not None:
+            conn = connection.get(self.using)
+            path = self.resource_cls.Meta.search_path
+            resp = conn.post(
+                conn.build_absolute_url(path),
+                json={'emails': email}
+            )
+            if resp.status_code not in {codes.ok}:
+                raise ApiError(resp.status_code, resp.text)
+            if type(resp.json()) == list:
+                if not resp.json():
+                    raise ApiError(resp.status_code, 'Response was: %s. Resource not found.' % resp.text)
+                if len(resp.json()) == 1:
+                    return self.resource_cls.from_api_data(resp.json()[0])
+            return self.resource_cls.from_api_data(resp.json())
+        raise ProspyrException("id or email is required when getting a Lead")
 
 class Lead(Resource, mixins.ReadWritable):
     class Meta:
@@ -702,6 +722,8 @@ class Lead(Resource, mixins.ReadWritable):
     )
     date_created = Unix()
     date_modified = Unix()
+
+    objects = LeadManager()
 
 
 class Account(Resource, mixins.Singleton):
