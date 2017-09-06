@@ -676,11 +676,13 @@ class LeadManager(Manager):
             return self.resource_cls.from_api_data(resp.json())
         raise ProspyrException("id or email is required when getting a Lead")
 
+
 class Lead(Resource, mixins.ReadWritable):
     class Meta:
         create_path = 'leads/'
         search_path = 'leads/search'
         detail_path = 'leads/{id}'
+        convert_path = 'leads/{id}/convert'
         order_fields = {
             'name',
             'assignee',
@@ -724,6 +726,15 @@ class Lead(Resource, mixins.ReadWritable):
     date_modified = Unix()
 
     objects = LeadManager()
+
+    def convert(self): #Should probably move this to a Manager Method
+        conn = connection.get('default') #Not ideal for those who need multiple connections
+        path = 'leads/%s/convert' % self.id
+        resp = conn.post(
+            conn.build_absolute_url(path)
+        )
+        if resp.status_code not in {codes.ok}:
+            raise ApiError(resp.status_code, resp.text)
 
 
 class Account(Resource, mixins.Singleton):
