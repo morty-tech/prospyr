@@ -131,6 +131,28 @@ class Deletable(object):
         else:
             raise ApiError(resp.status_code, resp.text)
 
+class Convertable(object):
+    """
+    Allows conversion of a Lead. Should be mixed in with that class.
+    This only applies to Leads!
+    """
+
+    _convert_success_codes = {codes.ok}
+
+    def convert(self, using='default'):
+        """
+        Convert this Lead. True on success.
+        """
+        if getattr(self, 'id', None) is None:
+            raise ValueError('%s cannot be converted before it is saved' % self)
+        conn = self._get_conn(using)
+        path = self.Meta.convert_path.format(id=self.id)
+        resp = conn.convert(conn.build_absolute_url(path))
+        if resp.status_code in self._convert_success_codes:
+            return True
+        else:
+            raise ApiError(resp.status_code, resp.text)
+
 
 class ReadWritable(Creatable, Readable, Updateable, Deletable):
     pass
