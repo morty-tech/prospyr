@@ -147,7 +147,7 @@ class Convertable(object):
             raise ValueError('%s cannot be converted before it is saved' % self)
         conn = self._get_conn(using)
         path = self.Meta.convert_path.format(id=self.id)
-        resp = conn.convert(conn.build_absolute_url(path))
+        resp = conn.post(conn.build_absolute_url(path))
         if resp.status_code in self._convert_success_codes:
             return True
         else:

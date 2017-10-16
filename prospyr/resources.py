@@ -553,7 +553,7 @@ class Opportunity(Resource, mixins.ReadWritable):
         validate=OneOf(choices=('Open', 'Won', 'Lost', 'Abandoned')),
     )
     tags = fields.List(fields.String)
-    win_probability = fields.Integer()
+    win_probability = fields.Integer(allow_none=True)
     custom_fields = fields.Nested(
         schema.CustomFieldSchema,
         many=True,
@@ -693,7 +693,10 @@ class LeadManager(Manager):
                 raise ApiError(resp.status_code, resp.text)
             if type(resp.json()) == list:
                 if not resp.json():
-                    raise ApiError(resp.status_code, 'Response was: %s. Resource not found.' % resp.text)
+                    raise ApiError(
+                        resp.status_code,
+                        'Response was: %s. Resource not found.' % resp.text
+                    )
                 if len(resp.json()) == 1:
                     return self.resource_cls.from_api_data(resp.json()[0])
             return self.resource_cls.from_api_data(resp.json())
